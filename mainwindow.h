@@ -1,0 +1,36 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <QStandardItemModel>
+#include <memory>
+
+class ClipboardManager;
+class CustomTrayIcon;
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+
+protected:
+    void closeEvent(QCloseEvent *event);
+
+private:
+    bool isResidentMode() const;
+
+private:
+    Ui::MainWindow *ui;
+    CustomTrayIcon *trayIcon;
+    QStandardItemModel* model;
+    std::unique_ptr<ClipboardManager> clipboardManager;
+
+};
+#endif // MAINWINDOW_H
