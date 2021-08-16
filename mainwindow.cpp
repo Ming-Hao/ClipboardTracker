@@ -18,12 +18,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new QStandardItemModel();
     ui->textTypeListView->setModel(model);
+    ui->textTypeListView->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
 
     clipboardManager->setModel(model);
 
-    connect(ui->textTypeListView, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){
-       clipboardManager->sendItemText(index);
-    });
+//    connect(ui->textTypeListView, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){
+//       clipboardManager->sendItemText(index);
+//    });
 
     setWindowIcon(trayIcon->icon());
     trayIcon->show();
