@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QDir>
+#include <QDebug>
 #include <Windows.h>
 
 const QString ClipboardActionHandler::getSaveFolder() const
@@ -18,21 +19,34 @@ void ClipboardActionHandler::setSaveFolder(const QString &newSaveFolder)
     saveFolder = newSaveFolder;
 }
 
-QString ClipboardActionHandler::save(QClipboard *clipboard)
+QList<ClipInfo> ClipboardActionHandler::save(QClipboard *clipboard)
 {
     mkDirIfNotCreated();
-    auto modelDisplayText = getText(clipboard);
-    if(clipboard->mimeData()->hasImage()) {
-        if(saveImage(clipboard->image())) {
 
+    if(clipboard->mimeData()->hasHtml() && clipboard->mimeData()->hasImage()) {
+        QString savedPath = saveImage(clipboard->image());
+        return { { clipboard->mimeData()->html(), savedPath } };
+    }
+
+    const auto textOrUrls = getTextOrUrls(clipboard);
+
+    if(textOrUrls.isEmpty()) {
+        return {};
+    }
+
+    QList<ClipInfo> results;
+
+    for(int i = 0; i < textOrUrls.size(); i++) {
+        QUrl url(textOrUrls[i]);
+        if(url.isLocalFile()) {
+            results.push_back(std::make_pair(textOrUrls[i], saveFile(url.toLocalFile())));
+        }
+        else {
+            results.push_back(std::make_pair(textOrUrls[i], ""));
         }
     }
-    else if(clipboard->mimeData()->formats().contains("text/uri-list")) {
-        if(saveFile(QUrl(clipboard->text()).toLocalFile())) {
 
-        }
-    }
-    return modelDisplayText;
+    return results;
 }
 
 void ClipboardActionHandler::clear()
@@ -69,19 +83,24 @@ void ClipboardActionHandler::sendText(const QString &text)
     }
 }
 
-QString ClipboardActionHandler::getText(QClipboard *clipboard)
+QStringList ClipboardActionHandler::getTextOrUrls(QClipboard *clipboard)
 {
-    const QString clippedText = clipboard->text();
-    if(clippedText.isEmpty() == false)
-        return clippedText;
-
-    if(clipboard->mimeData()->hasHtml()) {
-        const QString htmlText = clipboard->mimeData()->html();
-        if(htmlText.isEmpty() == false)
-            return htmlText;
+    const QString text = clipboard->text();
+    if(text.isEmpty()) {
+        return {};
     }
 
-    return QString();
+    if(clipboard->mimeData()->hasUrls() == false) {
+        return { text };
+    }
+
+    QStringList results;
+    const auto urls = clipboard->mimeData()->urls();
+    for(const auto& url : urls) {
+        results.push_back(url.toString());
+    }
+
+    return results;
 }
 
 void ClipboardActionHandler::mkDirIfNotCreated()
@@ -96,18 +115,29 @@ void ClipboardActionHandler::mkDirIfNotCreated()
     dir.mkdir(".");
 }
 
-bool ClipboardActionHandler::saveFile(const QString &filePath)
+QString ClipboardActionHandler::saveFile(const QString &filePath)
 {
     if(QFile::exists(filePath) == false)
-        return false;
+        return QString();
 
     QFileInfo fileInfo(filePath);
-    return QFile::copy(filePath,
-                       saveFolder + "/" + fileInfo.baseName() + "." + fileInfo.completeSuffix());
+    const QString savedPath = saveFolder + "/" + fileInfo.baseName() + "." + fileInfo.completeSuffix();
+    if(QFile::copy(filePath, savedPath)){
+        return savedPath;
+    }
+    else {
+        return QString();
+    }
 }
 
-bool ClipboardActionHandler::saveImage(const QImage &image)
+QString ClipboardActionHandler::saveImage(const QImage &image)
 {
     QDateTime currentTime = QDateTime::currentDateTime();
-    return image.save(saveFolder + "/" + currentTime.toString("ddhhmmss") + ".png");
+    QString savedPath = saveFolder + "/" + currentTime.toString("ddhhmmss") + ".png";
+    if(image.save(savedPath)) {
+        return savedPath;
+    }
+    else {
+        return QString();
+    }
 }

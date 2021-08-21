@@ -3,6 +3,9 @@
 
 #include <QString>
 #include <QImage>
+#include <utility>
+
+using ClipInfo = std::pair<QString, QString>;
 
 class QClipboard;
 
@@ -11,16 +14,16 @@ class ClipboardActionHandler
 public:
     const QString getSaveFolder() const;
     void setSaveFolder(const QString &newSaveFolder);
-    QString save(QClipboard* clipboard);
+    QList<ClipInfo> save(QClipboard* clipboard);
     void clear();
     void sendText(const QString& text);
 
 private:
-    QString getText(QClipboard* clipboard);
+    QStringList getTextOrUrls(QClipboard* clipboard);
     void mkDirIfNotCreated();
 
-    bool saveFile(const QString& filePath);
-    bool saveImage(const QImage& image);
+    QString saveFile(const QString& filePath);
+    QString saveImage(const QImage& image);
 private:
     QString saveFolder;
 };

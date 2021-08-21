@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
     model = new QStandardItemModel();
     ui->textTypeListView->setModel(model);
     ui->textTypeListView->setDragDropMode(QAbstractItemView::InternalMove);
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 //       clipboardManager->sendItemText(index);
 //    });
 
+    setWindowTitle("ClipboardTracker");
     setWindowIcon(trayIcon->icon());
     trayIcon->show();
 }
