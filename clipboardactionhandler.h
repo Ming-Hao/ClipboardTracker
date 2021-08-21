@@ -19,7 +19,6 @@ public:
     void sendText(const QString& text);
 
 private:
-    QStringList getTextOrUrls(QClipboard* clipboard);
     void mkDirIfNotCreated();
 
     QString saveFile(const QString& filePath);

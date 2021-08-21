@@ -28,21 +28,24 @@ QList<ClipInfo> ClipboardActionHandler::save(QClipboard *clipboard)
         return { { clipboard->mimeData()->html(), savedPath } };
     }
 
-    const auto textOrUrls = getTextOrUrls(clipboard);
-
-    if(textOrUrls.isEmpty()) {
+    const QString text = clipboard->text();
+    if(text.isEmpty()) {
         return {};
+    }
+
+    const auto urls = clipboard->mimeData()->urls();
+    if(urls.isEmpty()) {
+        return { { text, "" } };
     }
 
     QList<ClipInfo> results;
 
-    for(int i = 0; i < textOrUrls.size(); i++) {
-        QUrl url(textOrUrls[i]);
+    for(const auto& url : urls) {
         if(url.isLocalFile()) {
-            results.push_back(std::make_pair(textOrUrls[i], saveFile(url.toLocalFile())));
+            results.push_back(std::make_pair(url.toString(), saveFile(url.toLocalFile())));
         }
         else {
-            results.push_back(std::make_pair(textOrUrls[i], ""));
+            results.push_back(std::make_pair(url.toString(), ""));
         }
     }
 
@@ -81,26 +84,6 @@ void ClipboardActionHandler::sendText(const QString &text)
         ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
         SendInput(1, &ip, sizeof(INPUT));
     }
-}
-
-QStringList ClipboardActionHandler::getTextOrUrls(QClipboard *clipboard)
-{
-    const QString text = clipboard->text();
-    if(text.isEmpty()) {
-        return {};
-    }
-
-    if(clipboard->mimeData()->hasUrls() == false) {
-        return { text };
-    }
-
-    QStringList results;
-    const auto urls = clipboard->mimeData()->urls();
-    for(const auto& url : urls) {
-        results.push_back(url.toString());
-    }
-
-    return results;
 }
 
 void ClipboardActionHandler::mkDirIfNotCreated()
