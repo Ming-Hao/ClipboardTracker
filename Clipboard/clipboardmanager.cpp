@@ -19,7 +19,7 @@ ClipboardManager::~ClipboardManager()
     clipboardActionHandler->clear();
 }
 
-void ClipboardManager::setModel(QStandardItemModel *model)
+void ClipboardManager::setModel(MyClipboardModel *model)
 {
     this->model = model;
     clipboardMonitor->setModel(this->model);

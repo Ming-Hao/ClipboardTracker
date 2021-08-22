@@ -3,9 +3,8 @@
 
 #include <QString>
 #include <QImage>
-#include <utility>
 
-using ClipInfo = std::pair<QString, QString>;
+#include "myclipboardinfo.h"
 
 class QClipboard;
 
