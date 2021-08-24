@@ -16,7 +16,7 @@ public:
     QList<ClipInfo> save(QClipboard* clipboard);
     void clear();
     void sendText(const QString& text);
-
+    void openFile(const QString& path);
 private:
     void mkDirIfNotCreated();
 

@@ -20,16 +20,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textTypeListView->setModel(model);
     ui->textTypeListView->setItemDelegate(new ListViewDelegate);
     ui->textTypeListView->setDragDropMode(QAbstractItemView::InternalMove);
-    ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
+    //ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
 
     clipboardManager->setModel(model);
 
-    connect(model, &QAbstractItemModel::dataChanged, this, [this](){
-        this->update();
+    connect(ui->textTypeListView, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){
+       clipboardManager->openFile(index);
     });
-//    connect(ui->textTypeListView, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){
-//       clipboardManager->sendItemText(index);
-//    });
 
     setWindowTitle("ClipboardTracker");
     setWindowIcon(trayIcon->icon());

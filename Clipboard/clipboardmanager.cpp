@@ -32,3 +32,11 @@ void ClipboardManager::sendItemText(const QModelIndex &itemIndex)
 
     clipboardActionHandler->sendText(model->data(itemIndex).toString());
 }
+
+void ClipboardManager::openFile(const QModelIndex &itemIndex)
+{
+    if(model == nullptr)
+        return;
+
+    clipboardActionHandler->openFile(model->data(itemIndex, Qt::ToolTipRole).toString());
+}

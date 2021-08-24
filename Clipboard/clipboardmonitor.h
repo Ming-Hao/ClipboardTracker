@@ -6,6 +6,7 @@
 #include <QTimer>
 
 #include "myclipboardlistmodel.h"
+#include "myclipboardinfo.h"
 
 class ClipboardActionHandler;
 

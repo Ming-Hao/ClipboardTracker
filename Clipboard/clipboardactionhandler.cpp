@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDebug>
+#include <QProcess>
 #include <Windows.h>
 
 const QString ClipboardActionHandler::getSaveFolder() const
@@ -84,6 +85,22 @@ void ClipboardActionHandler::sendText(const QString &text)
         ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
         SendInput(1, &ip, sizeof(INPUT));
     }
+}
+
+void ClipboardActionHandler::openFile(const QString &path)
+{
+    if(path.isEmpty())
+        return;
+
+    qDebug() << "openFile path: " << path;
+    QStringList cmdArgs = {"/select", ",", QDir::toNativeSeparators(path) };
+
+    QProcess process;
+    process.setProgram("explorer.exe");
+    process.setArguments(cmdArgs);
+    qint64 pid;
+    process.startDetached(&pid);
+
 }
 
 void ClipboardActionHandler::mkDirIfNotCreated()
