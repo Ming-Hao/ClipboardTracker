@@ -1,6 +1,7 @@
 #include "myclipboardlistmodel.h"
 
 #include <QTextDocument>
+#include <QStandardItem>
 #include <QDebug>
 
 namespace TextProcessor
@@ -27,49 +28,8 @@ namespace TextProcessor
 }
 
 MyClipboardModel::MyClipboardModel(QObject *parent)
-    : QAbstractListModel(parent)
+    : QStandardItemModel(parent)
 {
-}
-
-int MyClipboardModel::rowCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-    return clipText.size();
-}
-
-int MyClipboardModel::columnCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-    return 1;
-}
-
-QVariant MyClipboardModel::data(const QModelIndex &index, int role) const
-{
-    if (!index.isValid())
-        return QVariant();
-
-    int rowIndex = index.row();
-    if(rowIndex >= clipText.size())
-        return QVariant();
-
-    if(role == Qt::DisplayRole) {
-        return clipText[rowIndex];
-    }
-    if(role == Qt::ToolTip) {
-        QString tooltip = clipTooltip[clipText[rowIndex]];
-        if(tooltip.isEmpty())
-            return QVariant();
-        return tooltip;
-    }
-    return QVariant();
-}
-
-Qt::ItemFlags MyClipboardModel::flags(const QModelIndex &index) const
-{
-    if(!index.isValid())
-        return Qt::NoItemFlags;
-
-    return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled;
 }
 
 bool MyClipboardModel::addClipInfoData(const ClipInfo &clipInfo)
@@ -78,19 +38,23 @@ bool MyClipboardModel::addClipInfoData(const ClipInfo &clipInfo)
         return false;
 
     QString processedText = TextProcessor::getFragmentText(clipInfo.first);
-    int index = clipText.indexOf(processedText);
-    if(index == 0)
-        return false;
 
-    if(index < 0) {
-        clipText.push_front(processedText);
-        clipTooltip.insert(processedText, clipInfo.second);
+    for(int i = rowCount() - 1; i >= 0; i--) {
+        if(item(i)->text() != processedText)
+            continue;
+
+        if(i == 0) {
+            return false;
+        }
+        removeRow(i);
+        break;
     }
-    else {
-        clipText.move(index, 0);
+    QStandardItem* newItem = new QStandardItem(processedText);
+
+    if(clipInfo.second.isEmpty() == false){
+        newItem->setData(clipInfo.second, Qt::ToolTipRole);
     }
-    auto start_index = createIndex(0, 0);
-    auto end_index = createIndex((clipText.size() - 1), 1);
-    emit dataChanged(start_index, end_index, { Qt::DisplayRole });
+
+    insertRow(0, newItem);
     return true;
 }

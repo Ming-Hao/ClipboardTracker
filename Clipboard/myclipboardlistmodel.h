@@ -1,27 +1,16 @@
 #ifndef MYCLIPBOARDLISTMODEL_H
 #define MYCLIPBOARDLISTMODEL_H
 
-#include <QAbstractListModel>
+#include <QStandardItemModel>
 
 #include "myclipboardinfo.h"
 
-class MyClipboardModel : public QAbstractListModel
+class MyClipboardModel : public QStandardItemModel
 {
-    Q_OBJECT
-
 public:
     explicit MyClipboardModel(QObject *parent = nullptr);
-
-    // Basic functionality:
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
-
-    bool addClipInfoData(const ClipInfo& clipInfo);
-private:
-    QHash<QString, QString> clipTooltip;
-    QStringList clipText;
+    bool addClipInfoData(const ClipInfo &clipInfo);
 };
+
 
 #endif // MYCLIPBOARDLISTMODEL_H
