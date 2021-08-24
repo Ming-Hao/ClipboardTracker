@@ -17,6 +17,8 @@ public:
     void clear();
     void sendText(const QString& text);
     void openFile(const QString& path);
+    void deleteFile(const QString& path);
+
 private:
     void mkDirIfNotCreated();
 

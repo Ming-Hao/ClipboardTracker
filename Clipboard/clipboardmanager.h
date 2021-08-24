@@ -16,6 +16,7 @@ public:
     void setModel(MyClipboardModel *model);
     void sendItemText(const QModelIndex& itemIndex);
     void openFile(const QModelIndex& itemIndex);
+    void deleteItemAndFile(const QModelIndex& itemIndex);
 
 private:
     MyClipboardModel* model;

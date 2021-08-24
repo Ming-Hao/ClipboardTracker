@@ -20,12 +20,20 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textTypeListView->setModel(model);
     ui->textTypeListView->setItemDelegate(new ListViewDelegate);
     ui->textTypeListView->setDragDropMode(QAbstractItemView::InternalMove);
-    //ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
+    ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
 
     clipboardManager->setModel(model);
 
-    connect(ui->textTypeListView, &QAbstractItemView::clicked, this, [this](const QModelIndex& index){
-       clipboardManager->openFile(index);
+    ui->btnOpenFile->setIcon(qApp->style()->standardIcon(QStyle::QStyle::SP_DialogOpenButton));
+    ui->btnOpenFile->setToolTip("Open File");
+    connect(ui->btnOpenFile, &QAbstractButton::clicked, this, [this](){
+        clipboardManager->openFile(ui->textTypeListView->currentIndex());
+    });
+
+    ui->btnDelete->setIcon(qApp->style()->standardIcon(QStyle::QStyle::SP_DialogCloseButton));
+    ui->btnDelete->setToolTip("Delete selected item");
+    connect(ui->btnDelete, &QAbstractButton::clicked, this, [this](){
+        clipboardManager->deleteItemAndFile(ui->textTypeListView->currentIndex());
     });
 
     setWindowTitle("ClipboardTracker");

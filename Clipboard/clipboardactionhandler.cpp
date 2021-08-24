@@ -103,6 +103,14 @@ void ClipboardActionHandler::openFile(const QString &path)
 
 }
 
+void ClipboardActionHandler::deleteFile(const QString &path)
+{
+    if(path.isEmpty())
+        return;
+
+    QFile::remove(path);
+}
+
 void ClipboardActionHandler::mkDirIfNotCreated()
 {
     if(saveFolder.isEmpty())

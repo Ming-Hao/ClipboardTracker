@@ -30,6 +30,9 @@ void ClipboardManager::sendItemText(const QModelIndex &itemIndex)
     if(model == nullptr)
         return;
 
+    if(!itemIndex.isValid())
+        return;
+
     clipboardActionHandler->sendText(model->data(itemIndex).toString());
 }
 
@@ -38,5 +41,20 @@ void ClipboardManager::openFile(const QModelIndex &itemIndex)
     if(model == nullptr)
         return;
 
+    if(!itemIndex.isValid())
+        return;
+
     clipboardActionHandler->openFile(model->data(itemIndex, Qt::ToolTipRole).toString());
+}
+
+void ClipboardManager::deleteItemAndFile(const QModelIndex &itemIndex)
+{
+    if(model == nullptr)
+        return;
+
+    if(!itemIndex.isValid())
+        return;
+
+    clipboardActionHandler->deleteFile(model->data(itemIndex, Qt::ToolTipRole).toString());
+    model->removeRow(itemIndex.row());
 }
