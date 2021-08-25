@@ -58,3 +58,10 @@ bool MyClipboardModel::addClipInfoData(const ClipInfo &clipInfo)
     insertRow(0, newItem);
     return true;
 }
+
+Qt::ItemFlags MyClipboardModel::flags(const QModelIndex &index) const
+{
+    if(!index.isValid())
+        return Qt::ItemIsDropEnabled;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled;
+}
