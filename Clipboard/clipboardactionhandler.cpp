@@ -40,7 +40,6 @@ QList<ClipInfo> ClipboardActionHandler::save(QClipboard *clipboard)
     }
 
     QList<ClipInfo> results;
-
     for(const auto& url : urls) {
         if(url.isLocalFile()) {
             results.push_back(std::make_pair(url.toString(), saveFile(url.toLocalFile())));
@@ -92,6 +91,9 @@ void ClipboardActionHandler::openFile(const QString &path)
     if(path.isEmpty())
         return;
 
+    if(QFile::exists(path) == false)
+        return;
+
     qDebug() << "openFile path: " << path;
     QStringList cmdArgs = {"/select", ",", QDir::toNativeSeparators(path) };
 
@@ -108,6 +110,7 @@ void ClipboardActionHandler::deleteFile(const QString &path)
     if(path.isEmpty())
         return;
 
+    qDebug() << "deleteFile path: " << path;
     QFile::remove(path);
 }
 
@@ -130,6 +133,11 @@ QString ClipboardActionHandler::saveFile(const QString &filePath)
 
     QFileInfo fileInfo(filePath);
     const QString savedPath = saveFolder + "/" + fileInfo.baseName() + "." + fileInfo.completeSuffix();
+
+    if(filePath == savedPath) {
+        return savedPath;
+    }
+
     if(QFile::copy(filePath, savedPath)){
         return savedPath;
     }

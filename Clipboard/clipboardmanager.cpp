@@ -44,7 +44,8 @@ void ClipboardManager::openFile(const QModelIndex &itemIndex)
     if(!itemIndex.isValid())
         return;
 
-    clipboardActionHandler->openFile(model->data(itemIndex, Qt::ToolTipRole).toString());
+    auto savedPath = model->data(itemIndex, MyClipboardModel::FileSavedPath).toString();
+    clipboardActionHandler->openFile(savedPath);
 }
 
 void ClipboardManager::deleteItemAndFile(const QModelIndex &itemIndex)
@@ -55,6 +56,7 @@ void ClipboardManager::deleteItemAndFile(const QModelIndex &itemIndex)
     if(!itemIndex.isValid())
         return;
 
-    clipboardActionHandler->deleteFile(model->data(itemIndex, Qt::ToolTipRole).toString());
+    auto savedPath = model->data(itemIndex, MyClipboardModel::FileSavedPath).toString();
+    clipboardActionHandler->deleteFile(savedPath);
     model->removeRow(itemIndex.row());
 }
