@@ -4,6 +4,7 @@
 #include <QStandardItemModel>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QToolBar>
 
 #include "clipboardmanager.h"
 #include "customtrayicon.h"
@@ -13,28 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , trayIcon(new CustomTrayIcon(this, this))
     , clipboardManager(std::make_unique<ClipboardManager>())
+    , residentMode(false)
 {
     ui->setupUi(this);
 
-    model = new MyClipboardModel();
-    ui->textTypeListView->setModel(model);
-    ui->textTypeListView->setItemDelegate(new ListViewDelegate);
-    ui->textTypeListView->setDragDropMode(QAbstractItemView::InternalMove);
-    ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
-
-    clipboardManager->setModel(model);
-
-    ui->btnOpenFile->setIcon(qApp->style()->standardIcon(QStyle::QStyle::SP_DialogOpenButton));
-    ui->btnOpenFile->setToolTip("Open File");
-    connect(ui->btnOpenFile, &QAbstractButton::clicked, this, [this](){
-        clipboardManager->openFile(ui->textTypeListView->currentIndex());
-    });
-
-    ui->btnDelete->setIcon(qApp->style()->standardIcon(QStyle::QStyle::SP_DialogCloseButton));
-    ui->btnDelete->setToolTip("Delete selected item");
-    connect(ui->btnDelete, &QAbstractButton::clicked, this, [this](){
-        clipboardManager->deleteItemAndFile(ui->textTypeListView->currentIndex());
-    });
+    buildToolBarActions();
+    setupModelAndView();
 
     setWindowTitle("ClipboardTracker");
     setWindowIcon(trayIcon->icon());
@@ -69,7 +54,58 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::isResidentMode() const
 {
-    return ui->chkboxResident->isChecked();
+    return residentMode;
+}
+
+void MainWindow::setupModelAndView()
+{
+    model = new MyClipboardModel();
+    ui->textTypeListView->setModel(model);
+    ui->textTypeListView->setItemDelegate(new ListViewDelegate);
+    ui->textTypeListView->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->textTypeListView->setEditTriggers(QAbstractItemView::DoubleClicked);
+
+    clipboardManager->setModel(model);
+}
+
+void MainWindow::buildToolBarActions()
+{
+    auto appStyle = qApp->style();
+    QAction* openAction = new QAction(appStyle->standardIcon(QStyle::SP_DialogOpenButton),
+                                       "Open File", this);
+
+    connect(openAction, &QAction::triggered, this, [this](){
+        clipboardManager->openFile(ui->textTypeListView->currentIndex());
+    });
+
+    QAction* deleteAction = new QAction(appStyle->standardIcon(QStyle::SP_DialogDiscardButton),
+                                        "Delete selected item", this);
+
+    connect(deleteAction, &QAction::triggered, this, [this](){
+        clipboardManager->deleteItemAndFile(ui->textTypeListView->currentIndex());
+    });
+
+    QIcon icon;
+    icon.addPixmap(appStyle->standardPixmap(QStyle::SP_DialogNoButton), QIcon::Normal, QIcon::Off);
+    icon.addPixmap(appStyle->standardPixmap(QStyle::SP_DialogYesButton), QIcon::Normal, QIcon::On);
+    QAction* residentAction = new QAction(icon, "Resident Mode", this);
+    residentAction->setCheckable(true);
+
+    connect(residentAction, &QAction::triggered, this, [this](bool checked){
+        residentMode = checked;
+        if(checked) {
+            statusBar()->showMessage("Enable resident mode");
+        }
+        else {
+            statusBar()->showMessage("Disable resident mode");
+        }
+    });
+
+    QToolBar *toolBar = new QToolBar(this);
+    toolBar->addAction(openAction);
+    toolBar->addAction(deleteAction);
+    toolBar->addAction(residentAction);
+    addToolBar(toolBar);
 }
 
 QSize ListViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -78,4 +114,3 @@ QSize ListViewDelegate::sizeHint(const QStyleOptionViewItem &option, const QMode
     result.setHeight(24);
     return result;
 }
-

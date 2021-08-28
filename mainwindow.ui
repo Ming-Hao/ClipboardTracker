@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
+    <width>419</width>
     <height>271</height>
    </rect>
   </property>
@@ -16,48 +16,34 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QCheckBox" name="chkboxResident">
-      <property name="text">
-       <string>Resident Mode</string>
+     <widget class="QListView" name="textTypeListView">
+      <property name="styleSheet">
+       <string notr="true">QListView {
+    outline: 0px;
+}
+
+QListView::item {
+    color: rgb(0,0,0);
+    border:none;
+}
+
+QListView::item:selected:!hover{
+	background-color: rgb(210, 210, 210);
+}
+
+QListView::item:selected:hover{
+	background-color: rgb(190, 190, 190);
+}
+
+QListView::item:hover {
+	background-color: rgb(240, 240, 240);
+}
+</string>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
      </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="btnOpenFile">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnDelete">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QListView" name="textTypeListView"/>
     </item>
    </layout>
   </widget>
@@ -66,12 +52,18 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>413</width>
+     <width>419</width>
      <height>21</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

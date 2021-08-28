@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QStyledItemDelegate>
+#include <QPointer>
 #include <memory>
+
 #include "myclipboardlistmodel.h"
 
 class ClipboardManager;
@@ -26,18 +28,21 @@ protected:
 
 private:
     bool isResidentMode() const;
+    void setupModelAndView();
+    void buildToolBarActions();
 
 private:
     Ui::MainWindow *ui;
-    CustomTrayIcon *trayIcon;
-    MyClipboardModel* model;
+    QPointer<CustomTrayIcon> trayIcon;
+    QPointer<MyClipboardModel> model;
     std::unique_ptr<ClipboardManager> clipboardManager;
+    bool residentMode;
 
 };
 
 class ListViewDelegate : public QStyledItemDelegate
 {
 protected:
-    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const override;
 };
 #endif // MAINWINDOW_H
