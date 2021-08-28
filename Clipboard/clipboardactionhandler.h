@@ -24,6 +24,7 @@ private:
 
     QString saveFile(const QString& filePath);
     QString saveImage(const QImage& image);
+    QString getTodayFolder() const;
 private:
     QString saveFolder;
 };

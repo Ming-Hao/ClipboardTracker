@@ -5,6 +5,7 @@
 #include <QImageReader>
 #include <QFile>
 #include <QDebug>
+#include <optional>
 
 namespace TextProcessor
 {
@@ -86,11 +87,21 @@ QVariant MyClipboardModel::data(const QModelIndex &index, int role) const
     if(!index.isValid())
         return QVariant();
 
-    if(role == Qt::ToolTipRole){
+    auto getTooltip = [=]() -> std::optional<QString> {
         auto savedPath = index.data(DataRole::FileSavedPath).toString();
         if(savedPath.isEmpty())
-            return QVariant();
-        return TextProcessor::getTooltipFormText(savedPath);
+            return std::nullopt;
+
+        auto tooltip = TextProcessor::getTooltipFormText(savedPath);
+        if(tooltip.isEmpty())
+            return std::nullopt;
+
+        return tooltip;
+    };
+    if(role == Qt::ToolTipRole){
+        auto tooltip = getTooltip();
+        if(tooltip.has_value())
+            return tooltip.value();
     }
     return QStandardItemModel::data(index, role);
 }

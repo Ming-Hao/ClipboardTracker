@@ -119,11 +119,12 @@ void ClipboardActionHandler::mkDirIfNotCreated()
     if(saveFolder.isEmpty())
         return;
 
-    QDir dir(saveFolder);
+
+    QDir dir(getTodayFolder());
     if (dir.exists())
         return;
 
-    dir.mkdir(".");
+    dir.mkpath(".");
 }
 
 QString ClipboardActionHandler::saveFile(const QString &filePath)
@@ -132,7 +133,7 @@ QString ClipboardActionHandler::saveFile(const QString &filePath)
         return QString();
 
     QFileInfo fileInfo(filePath);
-    const QString savedPath = saveFolder + "/" + fileInfo.baseName() + "." + fileInfo.completeSuffix();
+    const QString savedPath = getTodayFolder() + "/" + fileInfo.baseName() + "." + fileInfo.completeSuffix();
 
     if(filePath == savedPath) {
         return savedPath;
@@ -149,11 +150,18 @@ QString ClipboardActionHandler::saveFile(const QString &filePath)
 QString ClipboardActionHandler::saveImage(const QImage &image)
 {
     QDateTime currentTime = QDateTime::currentDateTime();
-    QString savedPath = saveFolder + "/" + currentTime.toString("ddhhmmss") + ".png";
+    const QString savedPath = getTodayFolder() + "/" + currentTime.toString("HHmmss") + ".png";
     if(image.save(savedPath)) {
         return savedPath;
     }
     else {
         return QString();
     }
+}
+
+QString ClipboardActionHandler::getTodayFolder() const
+{
+    const QString todayFolder = saveFolder + "/" +
+                                QDateTime::currentDateTime().toString("yyyyMMdd");
+    return todayFolder;
 }
