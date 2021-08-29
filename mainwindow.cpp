@@ -102,9 +102,11 @@ void MainWindow::buildToolBarActions()
     });
 
     QToolBar *toolBar = new QToolBar(this);
+    toolBar->addAction(residentAction);
+    toolBar->addSeparator();
     toolBar->addAction(openAction);
     toolBar->addAction(deleteAction);
-    toolBar->addAction(residentAction);
+
     addToolBar(toolBar);
 }
 
