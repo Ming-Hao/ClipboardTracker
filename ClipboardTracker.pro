@@ -13,9 +13,9 @@ SOURCES += \
     Clipboard/clipboardmanager.cpp \
     Clipboard/clipboardmonitor.cpp \
     Clipboard/myclipboardlistmodel.cpp \
-    customtrayicon.cpp \
-    main.cpp \
-    mainwindow.cpp
+    UI/customtrayicon.cpp \
+    UI/mainwindow.cpp \
+    main.cpp
 
 HEADERS += \
     Clipboard/clipboardactionhandler.h \
@@ -23,11 +23,11 @@ HEADERS += \
     Clipboard/clipboardmonitor.h \
     Clipboard/myclipboardinfo.h \
     Clipboard/myclipboardlistmodel.h \
-    customtrayicon.h \
-    mainwindow.h
+    UI/customtrayicon.h \
+    UI/mainwindow.h
 
 FORMS += \
-    mainwindow.ui
+    UI/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -37,3 +37,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 LIBS +=  -luser32
 
 INCLUDEPATH += Clipboard
+INCLUDEPATH += UI
