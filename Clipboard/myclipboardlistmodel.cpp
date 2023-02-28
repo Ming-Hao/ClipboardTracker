@@ -66,7 +66,7 @@ bool MyClipboardModel::addClipInfoData(const ClipInfo &clipInfo)
         break;
     }
     QStandardItem* newItem = new QStandardItem(processedText);
-    newItem->setData(textHash, DataRole::TextHashValue);
+    newItem->setData( QVariant::fromValue(static_cast<unsigned int>(textHash)), DataRole::TextHashValue);
     if(clipInfo.second.isEmpty() == false){
         newItem->setData(clipInfo.second, DataRole::FileSavedPath);
     }

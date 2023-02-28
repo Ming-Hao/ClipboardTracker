@@ -4,13 +4,18 @@
 #include "clipboardactionhandler.h"
 
 #include <QCoreApplication>
+#include <QStandardPaths>
 
 ClipboardManager::ClipboardManager()
     : model(nullptr)
     , clipboardMonitor(std::make_shared<ClipboardMonitor>())
     , clipboardActionHandler(std::make_shared<ClipboardActionHandler>())
 {
+#if defined(Q_OS_WIN)
     clipboardActionHandler->setSaveFolder(QCoreApplication::applicationDirPath() + "/Copied");
+#else
+    clipboardActionHandler->setSaveFolder(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Copied");
+#endif
     clipboardMonitor->setActionHandler(clipboardActionHandler);
 }
 

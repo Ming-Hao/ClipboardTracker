@@ -8,7 +8,9 @@
 #include <QDir>
 #include <QDebug>
 #include <QProcess>
+#if defined(Q_OS_WIN)
 #include <Windows.h>
+#endif
 
 const QString ClipboardActionHandler::getSaveFolder() const
 {
@@ -63,6 +65,7 @@ void ClipboardActionHandler::clear()
 
 void ClipboardActionHandler::sendText(const QString &text)
 {
+#if defined(Q_OS_WIN)
     INPUT ip;
     // Pause for 5 seconds.
     Sleep(2000);
@@ -84,6 +87,7 @@ void ClipboardActionHandler::sendText(const QString &text)
         ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
         SendInput(1, &ip, sizeof(INPUT));
     }
+#endif
 }
 
 void ClipboardActionHandler::openFile(const QString &path)
@@ -95,14 +99,18 @@ void ClipboardActionHandler::openFile(const QString &path)
         return;
 
     qDebug() << "openFile path: " << path;
-    QStringList cmdArgs = {"/select", ",", QDir::toNativeSeparators(path) };
-
+#if defined(Q_OS_WIN)
     QProcess process;
+    QStringList cmdArgs = {"/select", ",", QDir::toNativeSeparators(path) };
     process.setProgram("explorer.exe");
     process.setArguments(cmdArgs);
     qint64 pid;
     process.startDetached(&pid);
-
+#elif defined(Q_OS_MAC)
+    QProcess* process = new QProcess;
+    QObject::connect(process, &QProcess::finished, process, &QObject::deleteLater);
+    process->startCommand("open " + QString("-R \"%1\"").arg(path));
+#endif
 }
 
 void ClipboardActionHandler::deleteFile(const QString &path)
@@ -139,6 +147,9 @@ QString ClipboardActionHandler::saveFile(const QString &filePath)
         return savedPath;
     }
 
+    if(QFile::exists(savedPath)) {
+        return savedPath;
+    }
     if(QFile::copy(filePath, savedPath)){
         return savedPath;
     }
